@@ -3,6 +3,6 @@
   "description": "A plugin that automatically updates the composer when a WordPress plugin is updated.",
   "type": "wordpress-plugin",
   "require": {
-    "composer/installers": "^1.11"
+    "composer/installers": ">=2.0"
   }
 }
