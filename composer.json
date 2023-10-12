@@ -1,4 +1,8 @@
 {
   "name": "yeswedev/auto-composer-update",
-  "description": "A plugin that automatically updates the composer when a WordPress plugin is updated."
+  "description": "A plugin that automatically updates the composer when a WordPress plugin is updated.",
+  "type": "wordpress-plugin",
+  "require": {
+    "composer/installers": "^1.11"
+  }
 }
