@@ -8,7 +8,7 @@
  */
 
 function on_upgrader_process_complete($upgrader_object, $options) {
-    if ($options['action'] == 'update' && $options['type'] === 'plugin' && wp_get_environment_type() == 'development') {
+    if ($options['action'] == 'update' && $options['type'] === 'plugin' && wp_get_environment_type() == 'production') {
         $plugins = $options['plugins'];
 
         chdir(env('WP_CURRENT_PATH'));
@@ -29,7 +29,6 @@ function on_upgrader_process_complete($upgrader_object, $options) {
         }
 
         shell_exec('
-            export GIT_SSH_COMMAND="ssh -i ~/.ssh/project_starter/id_rsa" &&
             git add composer.json composer.lock &&
             git commit -m "Update plugins" &&
             git push
