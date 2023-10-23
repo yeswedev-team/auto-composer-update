@@ -1,4 +1,7 @@
 <?php
+
+use GuzzleHttp\Client;
+
 /**
  * Plugin Name: Auto Composer Update
  * Description: A plugin that automatically updates the composer when a WordPress plugin is updated.
@@ -7,9 +10,16 @@
  * Author URI: https://yeswedev.bzh/
  */
 
-function on_upgrader_process_complete($upgrader_object, $options) {
-    if ($options['action'] == 'update' && $options['type'] === 'plugin' && wp_get_environment_type() == 'production') {
+function on_upgrader_process_complete($upgrader_object, $options): void
+{
+    if ($options['action'] == 'update' && $options['type'] === 'plugin') {
         $plugins = $options['plugins'];
+        global $wp_version;
+
+        $body = [];
+        $body['git'] = env('GIT_REPOSITORY');
+        $body['branch'] = env('GIT_BRANCH');
+        $body['wordpressVersion'] = $wp_version;
 
         chdir(env('WP_CURRENT_PATH'));
 
@@ -23,16 +33,36 @@ function on_upgrader_process_complete($upgrader_object, $options) {
 
             foreach ($composer_json['require'] as $name => $version) {
                 if (str_contains($name, $plugin_name)) {
-                    shell_exec('composer require ' . $name . ' ' . $plugin_version);
+                    $body['plugins'][] = [
+                        'name' => $name,
+                        'version' => $plugin_version
+                    ];
                 }
             }
         }
 
-        shell_exec('
-            git add composer.json composer.lock &&
-            git commit -m "Update plugins" &&
-            git push
-        ');
+        $client = new Client();
+
+        try {
+            $response = $client->post(
+                env('API_UPDATE_WORDPRESS'),
+                [
+                    'form_params' => $body
+                ]
+            );
+        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+            echo '<div class="updated notice is-dismissible">';
+            echo '<p>Une erreur est survenue, veuillez remettre les plugins à leur version initiale.</p>';
+            echo '<p>' . $e->getMessage() . '</p>';
+            echo '</div>';
+        }
+
+        if ($response->getStatusCode() == 500) {
+            echo '<div class="updated notice is-dismissible">';
+            echo '<p>Une erreur est survenue, veuillez remettre les plugins à leur version initiale.</p>';
+            echo '</div>';
+        }
     }
 }
+
 add_action('upgrader_process_complete', 'on_upgrader_process_complete', 10, 2);
