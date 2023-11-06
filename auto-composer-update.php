@@ -25,22 +25,18 @@ function on_upgrader_process_complete($upgrader_object, $options): void
 
         /** @var array $composer_json */
         $composer_json = json_decode(file_get_contents('composer.json'), true);
-
+        
+        $plugins = $results['plugin'];
         foreach ($plugins as $plugin) {
-            $plugin_data = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin);
-            $plugin_version = $plugin_data['Version'];
-            $plugin_name = explode('/', $plugin)[0];
-
             foreach ($composer_json['require'] as $name => $version) {
-                if (str_contains($name, $plugin_name)) {
+                if (str_contains($name, $plugin->item->slug)) {
                     $body['plugins'][] = [
                         'name' => $name,
-                        'version' => $plugin_version
+                        'version' => $plugin->item->new_version
                     ];
                 }
             }
         }
-
         $client = new Client();
 
         try {
@@ -66,4 +62,4 @@ function on_upgrader_process_complete($upgrader_object, $options): void
 }
 
 add_filter('automatic_updates_is_vcs_checkout', '__return_false', 1);
-add_action('upgrader_process_complete', 'on_upgrader_process_complete', 10, 2);
+add_action('automatic_updates_complete', 'on_upgrader_process_complete', 10, 2);
