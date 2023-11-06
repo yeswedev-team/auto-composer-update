@@ -65,4 +65,5 @@ function on_upgrader_process_complete($upgrader_object, $options): void
     }
 }
 
+add_filter('automatic_updates_is_vcs_checkout', '__return_false', 1);
 add_action('upgrader_process_complete', 'on_upgrader_process_complete', 10, 2);
