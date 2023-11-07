@@ -10,4 +10,5 @@ A plugin that automatically updates the composer when a WordPress plugin is upda
 - In your WordPress configuration, please ensure that these 2 lines are present.
 
 `Config::define('AUTOMATIC_UPDATER_DISABLED', false);`
+
 `Config::define('FS_METHOD', 'direct');`
