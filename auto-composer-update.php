@@ -10,7 +10,7 @@ use GuzzleHttp\Client;
 * Author URI: https://yeswedev.bzh/
 */
 
-function on_upgrader_process_complete($results): void
+function on_upgrader_process_complete(array $results): void
 {
     if ( ! function_exists('write_log')) {
         function write_log ( $log )  {
