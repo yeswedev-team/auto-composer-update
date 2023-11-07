@@ -11,10 +11,14 @@ use GuzzleHttp\Client;
 */
 
 function write_log($log) {
-    if (is_array($log) || is_object($log)) {
-        error_log(print_r($log, true));
-    } else {
-        error_log($log);
+    if ( ! function_exists('write_log')) {
+        function write_log ( $log )  {
+            if ( is_array( $log ) || is_object( $log ) ) {
+                error_log( print_r( $log, true ) );
+            } else {
+                error_log( $log );
+            }
+        }
     }
 }
 
@@ -30,7 +34,7 @@ function get_composer_json(string $path) {
     return json_decode($composer_json, true) ?: false;
 }
 
-function update_composer($body) {
+function update_composer(array $body) {
     $client = new Client();
     try {
         $response = $client->post(
@@ -50,7 +54,7 @@ function update_composer($body) {
     }
 }
 
-function on_upgrader_process_complete($update_results) {
+function on_upgrader_process_complete(array $update_results) {
     global $wp_version;
 
     $body = [
