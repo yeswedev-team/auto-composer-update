@@ -10,67 +10,75 @@ use GuzzleHttp\Client;
 * Author URI: https://yeswedev.bzh/
 */
 
-function on_upgrader_process_complete(array $results): void
-{
-    if ( ! function_exists('write_log')) {
-        function write_log ( $log )  {
-            if ( is_array( $log ) || is_object( $log ) ) {
-                error_log( print_r( $log, true ) );
-            } else {
-                error_log( $log );
-            }
-        }
-    }
-    
-global $wp_version;
-    
-$body = [];
-$body['git'] = env('GIT_REPOSITORY');
-$body['branch'] = env('GIT_BRANCH');
-$body['wordpressVersion'] = $wp_version;
-    
-chdir(env('WP_CURRENT_PATH'));
-    
-/** @var array $composer_json */
-$composer_json = json_decode(file_get_contents('composer.json'), true);
-    
-$plugins = $results['plugin'];
-foreach ($plugins as $plugin) {
-    foreach ($composer_json['require'] as $name => $version) {
-        if (str_contains($name, $plugin->item->slug)) {
-            $body['plugins'][] = [
-                'name' => $name,
-                'version' => $plugin->item->new_version
-            ];
-        }
+function write_log($log) {
+    if (is_array($log) || is_object($log)) {
+        error_log(print_r($log, true));
+    } else {
+        error_log($log);
     }
 }
+
+function get_composer_json(string $path) {
+    $composer_json_path = $path . '/composer.json';
+
+    $composer_json = file_get_contents($composer_json_path);
+    if (!$composer_json) {
+        write_log('Can\'t read composer.json.');
+        return;
+    }
     
-$client = new Client();
+    return json_decode($composer_json, true) ?: false;
+}
+
+function update_composer($body) {
+    $client = new Client();
     try {
         $response = $client->post(
             env('API_UPDATE_WORDPRESS'),
-                [
-                    'form_params' => $body
-                ]
+            ['form_params' => $body]
         );
+
+        if ($response->getStatusCode() === 500) {
+            write_log('Error: ' . $response->getBody());
+            return false;
+        }
+        
+        return true;
     } catch (\GuzzleHttp\Exception\GuzzleException $e) {
         write_log($e);
-        echo '<div class="updated notice is-dismissible">';
-        echo '<p>Une erreur est survenue, veuillez remettre les plugins à leur version initiale.</p>';
-        echo '<p>' . $e->getMessage() . '</p>';
-        echo '</div>';
-
-        return;
-    }
-        
-    if ($response->getStatusCode() == 500) {
-        write_log($response);
-        echo '<div class="updated notice is-dismissible">';
-        echo '<p>Une erreur est survenue, veuillez remettre les plugins à leur version initiale.</p>';
-        echo '</div>';
+        return false;
     }
 }
-    
+
+function on_upgrader_process_complete($update_results) {
+    global $wp_version;
+
+    $body = [
+        'git' => env('GIT_REPOSITORY'),
+        'branch' => env('GIT_BRANCH'),
+        'wordpressVersion' => $wp_version,
+        'plugins' => []
+    ];
+
+    $composer_json = get_composer_json(env('WP_CURRENT_PATH'));
+
+    foreach ($update_results['plugin'] as $plugin) {
+        foreach ($composer_json['require'] as $name => $version) {
+            if (str_contains($name, $plugin->item->slug)) {
+                $body['plugins'][] = [
+                    'name' => $name,
+                    'version' => $plugin->item->new_version
+                ];
+            }
+        }
+    }
+
+    $update_result = update_composer($body);
+
+    if (!$update_result) {
+        write_log('Error while updating composer.json');
+    }
+}
+
 add_filter( 'automatic_updates_is_vcs_checkout', '__return_false', 1 );
 add_action('automatic_updates_complete', 'on_upgrader_process_complete', 10, 2);
