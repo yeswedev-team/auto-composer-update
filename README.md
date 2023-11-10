@@ -1,16 +1,17 @@
 # Auto Composer Update
 
-A plugin that automatically updates the composer when a WordPress plugin is updated.
+A plugin that uses WordPress Automatic Updater to send data to an API that updates the "composer.json", add changes and commit. It works for plugins and core.
 
 ## Installation and usage
 
-- Install the plugin with composer :
+1. Install the plugin with composer :
+
 ```
 {
       "type": "package",
       "package": {
         "name": "yeswedev-team/auto-composer-update",
-        "version": "2.0.0",
+        "version": "3.0.0",
         "type": "wordpress-plugin",
         "dist": {
           "type": "zip",
@@ -20,11 +21,14 @@ A plugin that automatically updates the composer when a WordPress plugin is upda
           "guzzlehttp/guzzle": "^7.8"
         }
       }
-    }
+}
 ```
   
-- Add the 'WP_CURRENT_PATH', 'GIT_REPOSITORY', 'GIT_BRANCH' and 'API_UPDATE_WORDPRESS' environment variable, which points to the path of the WordPress project
-- In your WordPress configuration, please ensure that these 2 lines are present.
+2. Add the `WP_CURRENT_PATH`, `GIT_REPOSITORY`, `GIT_BRANCH` and `API_UPDATE_WORDPRESS` environment variable, which points to the path of the WordPress project
+3. In your WordPress configuration, check if the presence of `Config::define('AUTOMATIC_UPDATER_DISABLED', false);` and `Config::define('FS_METHOD', 'direct');`
+4. Go to back-office and enable the plugin.
+5. Wait for WordPress Automatic Updater or use CLI to trigger it : `wp eval 'do_action("wp_maybe_auto_update");'`
 
-`Config::define('AUTOMATIC_UPDATER_DISABLED', false);`
-`Config::define('FS_METHOD', 'direct');`
+## Help
+
+When the update fail, WordPress may add a '.lock' into the wp_options table, normally it will expire before the next trigger of the WordPress Automatic Updater, but you can also remove it manually : `DELETE FROM 'wp_options' WHERE 'option_name' LIKE '%.lock%';` to be sure.
