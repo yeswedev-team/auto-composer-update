@@ -59,7 +59,7 @@ function get_latest_wp_version() {
     $updates = get_core_updates();
 
     if (!is_array($updates)) {
-        write_log('Impossible de récupérer les informations de mise à jour.');
+        write_log('Unable to retrieve update information.');
         return $wp_version;
     } else {
         $latest_update = array_shift($updates);
