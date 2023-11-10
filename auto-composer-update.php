@@ -54,13 +54,24 @@ function update_composer(array $body) {
     }
 }
 
-function on_upgrader_process_complete(array $update_results) {
+function get_latest_wp_version() {
     global $wp_version;
+    $updates = get_core_updates();
 
+    if (!is_array($updates)) {
+        write_log('Unable to retrieve update information.');
+        return $wp_version;
+    } else {
+        $latest_update = array_shift($updates);
+        return $latest_update->current;
+    }
+}
+
+function on_upgrader_process_complete(array $update_results) {
     $body = [
         'git' => env('GIT_REPOSITORY'),
         'branch' => env('GIT_BRANCH'),
-        'wordpressVersion' => $wp_version,
+        'wordpressVersion' => get_latest_wp_version(),
         'plugins' => []
     ];
 
