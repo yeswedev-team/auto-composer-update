@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 /**
 * Plugin Name: Auto Composer Update
 * Description: A plugin that automatically updates the composer when a WordPress plugin is updated.
-* Version: 3.0.0
+* Version: 3.0.1
 * Author: Yes We Dev
 * Author URI: https://yeswedev.bzh/
 */
@@ -79,7 +79,9 @@ function on_upgrader_process_complete(array $update_results) {
 
     foreach ($update_results['plugin'] as $plugin) {
         foreach ($composer_json['require'] as $name => $version) {
-            if (str_contains($name, $plugin->item->slug)) {
+            $parts = explode('/', $name);
+            $packageSlug = end($parts);
+            if ($packageSlug === $plugin->item->slug) {
                 $body['plugins'][] = [
                     'name' => $name,
                     'version' => $plugin->item->new_version
