@@ -25,7 +25,11 @@ A plugin that uses WordPress Automatic Updater to send data to an API that updat
 ```
   
 2. Add the `WP_CURRENT_PATH`, `GIT_REPOSITORY`, `GIT_BRANCH` and `API_UPDATE_WORDPRESS` environment variable, which points to the path of the WordPress project
-3. In your WordPress configuration, check the presence of these lines `Config::define('AUTOMATIC_UPDATER_DISABLED', false);`, `Config::define('FS_METHOD', 'direct');`
+3. In your WordPress configuration, check the presence of these lines on the environment you want
+   1. `Config::define('AUTOMATIC_UPDATER_DISABLED', false);`
+   2. `Config::define('FS_METHOD', 'direct');`
+   3. `Config::define('WP_AUTO_UPDATE_CORE', true);`
+   4. `Config::define('DISALLOW_FILE_MODS', false);`
 4. Go to back-office and enable the plugin.
 5. Wait for WordPress Automatic Updater or use CLI to trigger it : `wp eval 'do_action("wp_maybe_auto_update");'`
 
