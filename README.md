@@ -30,8 +30,9 @@ A plugin that uses WordPress Automatic Updater to send data to an API that updat
    2. `Config::define('FS_METHOD', 'direct');`
    3. `Config::define('WP_AUTO_UPDATE_CORE', true);`
    4. `Config::define('DISALLOW_FILE_MODS', false);`
-4. Go to back-office and enable the plugin.
-5. Wait for WordPress Automatic Updater or use CLI to trigger it : `wp eval 'do_action("wp_maybe_auto_update");'`
+4. Ensure that all maintainers can push on the branch concerned.
+5. Go to back-office and enable the plugin.
+6. Wait for WordPress Automatic Updater or use CLI to trigger it : `wp eval 'do_action("wp_maybe_auto_update");'`
 
 ## Help
 
