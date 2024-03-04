@@ -112,15 +112,20 @@ function on_upgrader_process_complete(array $update_results): void
         error_log('Error while updating composer.json');
     }
 
-    $acf_plugin_path = 'advanced-custom-fields-pro/acf.php';
+    $plugins_to_activate = [
+        'advanced-custom-fields-pro/acf.php',
+        'gravityforms/gravityforms.php'
+    ];
 
-    if (!is_plugin_active($acf_plugin_path)) {
-        $result = activate_plugin($acf_plugin_path);
+    foreach ($plugins_to_activate as $plugin) {
+        if (!is_plugin_active($plugin)) {
+            $result = activate_plugin($plugin);
 
-        if (is_wp_error($result)) {
-            error_log('Error: Error while activating ACF : ' . $result->get_error_message());
-        } else {
-            error_log('Info : The plugin ACF pro has been reactivated.');
+            if (is_wp_error($result)) {
+                error_log('Error: Error while activating ' . $plugin . ' : ' . $result->get_error_message());
+            } else {
+                error_log('Info : The plugin ' . $plugin . ' has been reactivated.');
+            }
         }
     }
 }
