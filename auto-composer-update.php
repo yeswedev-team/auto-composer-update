@@ -111,6 +111,18 @@ function on_upgrader_process_complete(array $update_results): void
     if (!$update_result) {
         error_log('Error while updating composer.json');
     }
+
+    $acf_plugin_path = 'advanced-custom-fields-pro/acf.php';
+
+    if (!is_plugin_active($acf_plugin_path)) {
+        $result = activate_plugin($acf_plugin_path);
+
+        if (is_wp_error($result)) {
+            error_log('Error: Error while activating ACF : ' . $result->get_error_message());
+        } else {
+            error_log('Info : The plugin ACF pro has been reactivated.');
+        }
+    }
 }
 
 add_filter('automatic_updates_is_vcs_checkout', '__return_false', 1);
