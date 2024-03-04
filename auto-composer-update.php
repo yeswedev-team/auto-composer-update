@@ -63,6 +63,7 @@ function on_upgrader_process_complete(array $update_results): void
         'git' => env('GIT_REPOSITORY'),
         'branch' => env('GIT_BRANCH'),
         'wordpressVersion' => get_bloginfo('version'),
+        'updateRepository' => env('UPDATE_REPOSITORY'),
         'plugins' => []
     ];
 

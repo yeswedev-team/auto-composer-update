@@ -24,7 +24,7 @@ A plugin that uses WordPress Automatic Updater to send data to an API that updat
 }
 ```
   
-2. Add the `WP_CURRENT_PATH`, `GIT_REPOSITORY`, `GIT_BRANCH` and `API_UPDATE_WORDPRESS` environment variable, which points to the path of the WordPress project
+2. Add the `WP_CURRENT_PATH`, `GIT_REPOSITORY`, `GIT_BRANCH`, `UPDATE_REPOSITORY (true or false)` and `API_UPDATE_WORDPRESS` environment variable, which points to the path of the WordPress project
 3. In your WordPress configuration, check the presence of these lines on the environment you want
    1. `Config::define('AUTOMATIC_UPDATER_DISABLED', false);`
    2. `Config::define('FS_METHOD', 'direct');`
