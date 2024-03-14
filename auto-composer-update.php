@@ -31,22 +31,22 @@ function update_composer(array $body): bool
 
     try {
         $response = $client->post(
-            env('API_UPDATE_WORDPRESS'),
+            getenv('API_UPDATE_WORDPRESS'),
             ['form_params' => $body]
         );
 
         if ($response->getStatusCode() === 500) {
-            error_log('Error : The WordPress and plugins update on the remote repository (' . env('GIT_BRANCH') . ') has failed .');
+            error_log('Error : The WordPress and plugins update on the remote repository (' . getenv('GIT_BRANCH') . ') has failed .');
             error_log('Error: ' . $response->getBody());
 
             return false;
         }
 
-        error_log('Info : The WordPress and plugins update on the remote repository (' . env('GIT_BRANCH') . ') was successful.');
+        error_log('Info : The WordPress and plugins update on the remote repository (' . getenv('GIT_BRANCH') . ') was successful.');
 
         return true;
     } catch (\GuzzleHttp\Exception\GuzzleException $exception) {
-        error_log('Error : The WordPress and plugins update on the remote repository (' . env('GIT_BRANCH') . ') has failed .');
+        error_log('Error : The WordPress and plugins update on the remote repository (' . getenv('GIT_BRANCH') . ') has failed .');
         error_log('Error : ' . print_r($exception, true));
 
         return false;
@@ -60,10 +60,10 @@ function on_upgrader_process_complete(array $update_results): void
     }
 
     $body = [
-        'git' => env('GIT_REPOSITORY'),
-        'branch' => env('GIT_BRANCH'),
+        'git' => getenv('GIT_REPOSITORY'),
+        'branch' => getenv('GIT_BRANCH'),
         'wordpressVersion' => get_bloginfo('version'),
-        'updateRepository' => env('UPDATE_REPOSITORY'),
+        'updateRepository' => getenv('UPDATE_REPOSITORY'),
         'plugins' => []
     ];
 
@@ -87,7 +87,7 @@ function on_upgrader_process_complete(array $update_results): void
                 error_log('Info : A new version of WordPress has been installed locally (' . $version . ').');
                 break;
             case 'plugin':
-                $composer_json = get_composer_json(env('WP_CURRENT_PATH'));
+                $composer_json = get_composer_json(getenv('WP_CURRENT_PATH'));
 
                 foreach ($value as $plugin) {
                     foreach ($composer_json['require'] as $name => $version) {

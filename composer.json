@@ -5,7 +5,8 @@
   "license": "MIT",
   "require": {
     "composer/installers": ">=2.0",
-    "guzzlehttp/guzzle": "^7.8"
+    "guzzlehttp/guzzle": "^7.8",
+    "vlucas/phpdotenv": "^5.6"
   },
   "config": {
     "allow-plugins": {
