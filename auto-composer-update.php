@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 /**
  * Plugin Name: Auto Composer Update
  * Description: A plugin that automatically updates the composer when a WordPress plugin is updated.
- * Version: 4.3.0
+ * Version: 4.5.1
  * Author: Yes We Dev
  * Author URI: https://yeswedev.bzh/
  */
